@@ -7,6 +7,11 @@ final class ExternalTriggerService {
 
     func start(handler: @escaping () -> Void) {
         guard !isRegistered else { return }
+        guard isEnabledForCurrentBuildAndEnvironment else {
+            FileEventLog.append("external_trigger_disabled")
+            return
+        }
+
         FileEventLog.append("external_trigger_start")
         observer = DistributedNotificationCenter.default().addObserver(
             forName: Notification.Name(notificationName),
@@ -16,6 +21,14 @@ final class ExternalTriggerService {
             handler()
         }
         isRegistered = true
+    }
+
+    private var isEnabledForCurrentBuildAndEnvironment: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.environment["FORMATTER_ENABLE_EXTERNAL_TRIGGER"] == "1"
+        #else
+        false
+        #endif
     }
 
     func stop() {

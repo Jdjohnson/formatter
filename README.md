@@ -8,8 +8,11 @@ The original use case is simple: copy Markdown from an AI coding tool, paste it 
 
 - Formats selected text only.
 - Preserves the text content.
+- Uses deterministic formatting rules by default.
 - Converts Markdown structure into rich pasteboard output where the target app supports it.
 - Keeps Markdown as plain text for ChatGPT.
+- Optionally uses a local Ollama model only as a fallback for ambiguous Markdown.
+- Validates local-model output before pasting so the selected text is not rewritten.
 - Restores your previous clipboard after formatting.
 - Logs operational events only, not selected text.
 
@@ -23,12 +26,18 @@ The original use case is simple: copy Markdown from an AI coding tool, paste it 
 
 Unsupported apps fail with a safe no-op.
 
+## How Formatting Works
+
+Formatter is rule-based first. For normal Markdown, it parses headings, bold, italic, inline code, fenced code blocks, blockquotes, bullets, numbered lists, spacing, and line breaks without using an LLM.
+
+If the Markdown appears ambiguous, such as an unclosed code fence or unmatched inline marker, Formatter can ask a locally installed Ollama model to produce an HTML fragment. That fallback stays on your machine and is accepted only if the plain-text content still matches what Formatter expected. If Ollama is unavailable or the output changes the text, Formatter leaves the selection alone.
+
 ## Requirements
 
 - macOS 14 or newer
 - Xcode Command Line Tools
 - Accessibility permission for Formatter
-- Optional: Ollama, for future local-model fallback behavior
+- Optional: Ollama, for local-model fallback on ambiguous Markdown
 
 Install Xcode Command Line Tools if needed:
 
@@ -110,7 +119,7 @@ Build, launch, and verify the process starts:
 ./script/build_and_run.sh --verify
 ```
 
-Trigger formatting without pressing the hotkey, useful for local testing:
+Trigger formatting without pressing the hotkey, useful for local debug testing when the app has been launched with `FORMATTER_ENABLE_EXTERNAL_TRIGGER=1`:
 
 ```sh
 ./script/trigger_format.sh

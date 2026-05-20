@@ -40,6 +40,36 @@ final class MarkdownFormatterTests: XCTestCase {
         XCTAssertNotNil(result.payload.rtfData)
     }
 
+    func testUnicodeBulletGlyphsBecomeRichListItems() {
+        let markdown = """
+        What I'm thinking about:
+
+        • Who maintains the mapping?
+
+        • How is it measured?
+
+        • What evidence proves it?
+        """
+
+        let result = MarkdownFormatter.format(markdown, for: .superhuman)
+
+        XCTAssertTrue(result.payload.html?.contains("<li>Who maintains the mapping?</li>") == true)
+        XCTAssertTrue(result.payload.html?.contains("<li>How is it measured?</li>") == true)
+        XCTAssertTrue(result.payload.html?.contains("<li>What evidence proves it?</li>") == true)
+        XCTAssertEqual(
+            result.payload.plainText,
+            """
+            What I'm thinking about:
+
+            - Who maintains the mapping?
+
+            - How is it measured?
+
+            - What evidence proves it?
+            """
+        )
+    }
+
     func testPlainTextPreservesWordsWithoutMarkdownMarkers() {
         let plain = MarkdownFormatter.renderPlainText(sample)
 

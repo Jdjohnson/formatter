@@ -1,10 +1,11 @@
 # E2E Status
 
-Last local verification: 2026-05-19
+Last local verification: 2026-05-20
 
 ## Automated
 
-- `swift test`: passing, 22 tests.
+- `swift test`: passing, 23 tests.
+- Unicode bullet glyphs like `• Item` convert to rich unordered list items for Superhuman-compatible output.
 - `./script/build_and_run.sh --verify`: app builds, signs for local development, launches, and registers the hotkey.
 
 ## Manual App Checks

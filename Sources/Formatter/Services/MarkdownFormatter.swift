@@ -305,8 +305,10 @@ enum MarkdownFormatter {
 
     private static func unorderedListText(from line: String) -> String? {
         let trimmed = line.trimmingCharacters(in: .whitespaces)
-        guard trimmed.hasPrefix("- ") else { return nil }
-        return String(trimmed.dropFirst(2))
+        for marker in ["- ", "• "] where trimmed.hasPrefix(marker) {
+            return String(trimmed.dropFirst(marker.count))
+        }
+        return nil
     }
 
     private static func orderedListText(from trimmedLine: String) -> String? {
